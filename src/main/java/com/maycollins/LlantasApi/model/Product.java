@@ -1,24 +1,26 @@
 package com.maycollins.LlantasApi.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "product")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "productid")
-    private Long productId;
+    private Integer productid;
 
     @Column(name = "productserial", nullable = false)
-    private String productSerial;
+    private String productserial;
 
     @ManyToOne
     @JoinColumn(name = "categoryid", nullable = false)
-    private ProductCategory productCategory;
+    private ProductCategory productcategory;
 
     @Column(name = "stock", nullable = false)
     private Integer stock;
@@ -27,66 +29,10 @@ public class Product {
     private Double price;
 
     @Column(name = "isdefective")
-    private Boolean isDefective;
+    private Boolean isdefective;
 
     @Column(name = "warrantyperiod")
     @Temporal(TemporalType.DATE)
-    private Date warrantyPeriod;
+    private Date warrantyperiod;
 
-    // Getters y Setters
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public String getProductSerial() {
-        return productSerial;
-    }
-
-    public void setProductSerial(String productSerial) {
-        this.productSerial = productSerial;
-    }
-
-    public ProductCategory getProductCategory() {
-        return productCategory;
-    }
-
-    public void setProductCategory(ProductCategory productCategory) {
-        this.productCategory = productCategory;
-    }
-
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Boolean getIsDefective() {
-        return isDefective;
-    }
-
-    public void setIsDefective(Boolean isDefective) {
-        this.isDefective = isDefective;
-    }
-
-    public Date getWarrantyPeriod() {
-        return warrantyPeriod;
-    }
-
-    public void setWarrantyPeriod(Date warrantyPeriod) {
-        this.warrantyPeriod = warrantyPeriod;
-    }
 }
