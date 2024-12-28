@@ -9,8 +9,11 @@ public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userId")
+    @Column(name = "userid")
     private Long userId;
+
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -18,27 +21,30 @@ public class UserAccount {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "userRole", nullable = false)
-    private String userRole; // "Admin", "Seller", "WarehouseManager", "Supervisor"
+    @Column(name = "userrole", nullable = false)
+    private String userRole; // "admin", "seller", "warehouse", "supervisor"
 
-    @Column(name = "userStatus", nullable = false)
-    private String userStatus; // "Active", "Inactive", "Blocked"
+    @Column(name = "userstatus", nullable = false)
+    private String userStatus; // "active", "inactive", "blocked"
 
-    @Column(name = "creationDate", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "creationdate", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date creationDate;
 
-    @Column(name = "lastAccess")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "lastaccess")
+    @Temporal(TemporalType.DATE)
     private Date lastAccess;
 
-    @Column(name = "contactPhone")
+    @Column(name = "contactphone")
     private String contactPhone;
 
     @Column(name = "address")
     private String address;
 
-    @Column(name = "profilePicture")
+    @Column(name = "modulepermissions", columnDefinition = "json")
+    private String modulePermissions; // JSON string for permissions
+
+    @Column(name = "profilepicture")
     private String profilePicture; // URL or path to the profile picture
 
     // Getters and Setters
@@ -48,6 +54,14 @@ public class UserAccount {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -112,6 +126,14 @@ public class UserAccount {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getModulePermissions() {
+        return modulePermissions;
+    }
+
+    public void setModulePermissions(String modulePermissions) {
+        this.modulePermissions = modulePermissions;
     }
 
     public String getProfilePicture() {
