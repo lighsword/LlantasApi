@@ -7,33 +7,41 @@ import java.util.Map;
 
 public class RolePermissions {
 
-    public static Map<String, Map<String, List<String>>> getPermissionsByRole() {
-        Map<String, Map<String, List<String>>> permissions = new HashMap<>();
+    public static Map<String, List<String>> getPermissionsByRole(String role) {
+        Map<String, Map<String, List<String>>> allPermissions = new HashMap<>();
 
         // Admin: Todos los permisos
-        permissions.put("admin", Map.of(
-                "sales", Arrays.asList("create", "read", "update", "delete"),
-                "inventory", Arrays.asList("create", "read", "update", "delete"),
-                "users", Arrays.asList("create", "read", "update", "delete")
+        allPermissions.put("admin", Map.of(
+                "ventas", Arrays.asList("crear", "leer", "actualizar", "eliminar"),
+                "inventario", Arrays.asList("crear", "leer", "actualizar", "eliminar"),
+                "usuarios", Arrays.asList("crear", "leer", "actualizar", "eliminar"),
+                "reportes", Arrays.asList("crear", "leer", "exportar")
         ));
 
         // Vendedor: Permisos limitados
-        permissions.put("seller", Map.of(
-                "sales", Arrays.asList("create", "read", "update"),
-                "inventory", Arrays.asList("read")
+        allPermissions.put("vendedor", Map.of(
+                "ventas", Arrays.asList("crear", "leer", "actualizar"),
+                "inventario", Arrays.asList("leer"),
+                "reportes", Arrays.asList("leer")
         ));
 
         // Almacenista: Permisos de inventario
-        permissions.put("warehouse", Map.of(
-                "inventory", Arrays.asList("create", "read", "update")
+        allPermissions.put("almacenista", Map.of(
+                "inventario", Arrays.asList("crear", "leer", "actualizar"),
+                "reportes", Arrays.asList("leer")
         ));
 
-        // Supervisor: Permisos de ventas e inventario
-        permissions.put("supervisor", Map.of(
-                "sales", Arrays.asList("create", "read", "update", "delete"),
-                "inventory", Arrays.asList("create", "read", "update", "delete")
+        // Supervisor: Permisos de supervisión
+        allPermissions.put("supervisor", Map.of(
+                "ventas", Arrays.asList("leer", "actualizar"),
+                "inventario", Arrays.asList("leer", "actualizar"),
+                "reportes", Arrays.asList("crear", "leer", "exportar")
         ));
 
-        return permissions;
+        // Convertir el rol a minúsculas para hacer la comparación insensible a mayúsculas
+        String roleLowerCase = role.toLowerCase();
+
+        // Retornar los permisos del rol específico o un mapa vacío si el rol no existe
+        return allPermissions.getOrDefault(roleLowerCase, new HashMap<>());
     }
 }

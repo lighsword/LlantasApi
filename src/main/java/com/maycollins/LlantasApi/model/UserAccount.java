@@ -1,10 +1,8 @@
 package com.maycollins.LlantasApi.model;
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +33,14 @@ public class UserAccount {
     private String userRole;
 
     @Column(name = "userstatus", nullable = false)
-    private String userStatus;
+    private String userStatus = "ACTIVE";
 
     @Column(name = "creationdate", nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate = new Date();
 
     @Column(name = "lastaccess")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date lastAccess;
 
     @Column(name = "contactphone")
@@ -51,9 +49,25 @@ public class UserAccount {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "modulepermissions", columnDefinition = "json")
-    private Map<String, List<String>> modulePermissions;
+    @Column(name = "modulepermissions", columnDefinition = "jsonb")
+    private String modulePermissionsJson;
 
     @Column(name = "profilepicture")
     private String profilePicture;
+
+    @Transient
+    private Map<String, List<String>> modulePermissions;
+
+    @PrePersist
+    protected void onCreate() {
+        creationDate = new Date();
+        if (userStatus == null) {
+            userStatus = "ACTIVE";
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastAccess = new Date();
+    }
 }
