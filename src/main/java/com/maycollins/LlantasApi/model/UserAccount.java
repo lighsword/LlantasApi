@@ -1,16 +1,24 @@
 package com.maycollins.LlantasApi.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
 import java.util.Date;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "useraccount")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserAccount {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "useraccount_userid_seq")
+    @SequenceGenerator(name = "useraccount_userid_seq", sequenceName = "useraccount_userid_seq", allocationSize = 1)
     @Column(name = "userid", nullable = false, updatable = false)
     private Long userId;
 
@@ -31,7 +39,7 @@ public class UserAccount {
 
     @Column(name = "creationdate", nullable = false)
     @Temporal(TemporalType.DATE)
-    private Date creationDate = new Date(); // Asignar fecha actual por defecto
+    private Date creationDate = new Date();
 
     @Column(name = "lastaccess")
     @Temporal(TemporalType.DATE)
@@ -44,106 +52,8 @@ public class UserAccount {
     private String address;
 
     @Column(name = "modulepermissions", columnDefinition = "json")
-    @Convert(converter = JsonToMapListConverter.class)
     private Map<String, List<String>> modulePermissions;
 
     @Column(name = "profilepicture")
     private String profilePicture;
-
-    // Getters y Setters
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(String userRole) {
-        this.userRole = userRole;
-    }
-
-    public String getUserStatus() {
-        return userStatus;
-    }
-
-    public void setUserStatus(String userStatus) {
-        this.userStatus = userStatus;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getLastAccess() {
-        return lastAccess;
-    }
-
-    public void setLastAccess(Date lastAccess) {
-        this.lastAccess = lastAccess;
-    }
-
-    public String getContactPhone() {
-        return contactPhone;
-    }
-
-    public void setContactPhone(String contactPhone) {
-        this.contactPhone = contactPhone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Map<String, List<String>> getModulePermissions() {
-        return modulePermissions;
-    }
-
-    public void setModulePermissions(Map<String, List<String>> modulePermissions) {
-        this.modulePermissions = modulePermissions;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
 }
