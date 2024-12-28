@@ -1,30 +1,47 @@
 package com.maycollins.LlantasApi.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.Date;
+import lombok.NoArgsConstructor;
 
-@Data
+import java.time.LocalDateTime;
+
+
 @Entity
-@Table(name = "return")
+@Table(name = "return") // Note: "return" is a reserved word in Java, might want to rename the table
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Return {
     @Id
-    private Integer returnid;
-    private Integer defectivequantity;
-    private Date returnregistrationdate;
-    private Date returnchangedate;
-    private Date returnfinalizationdate;
-    private Boolean returnstatus;
+    @Column(name = "return_id")
+    private Integer returnId;
 
     @ManyToOne
-    @JoinColumn(name = "warehouseid")
-    private WarehouseInventory warehouseInventory;
+    @JoinColumn(name = "warehouse_id", nullable = false)
+    private WarehouseInventory warehouse;
 
     @ManyToOne
-    @JoinColumn(name = "saleid")
+    @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
 
     @ManyToOne
-    @JoinColumn(name = "productid")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @Column(name = "defective_quantity", nullable = false)
+    private Integer defectiveQuantity;
+
+    @Column(name = "return_registration_date", nullable = false)
+    private LocalDateTime returnRegistrationDate;
+
+    @Column(name = "return_change_date")
+    private LocalDateTime returnChangeDate;
+
+    @Column(name = "return_finalization_date")
+    private LocalDateTime returnFinalizationDate;
+
+    @Column(name = "return_status", nullable = false)
+    private Boolean returnStatus;
 }

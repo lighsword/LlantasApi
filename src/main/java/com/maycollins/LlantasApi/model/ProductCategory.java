@@ -1,24 +1,24 @@
 package com.maycollins.LlantasApi.model;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.List;
+import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "product_category")
 @Data
-@Table(name = "productcategory")
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductCategory {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "categoryid")
+    @Column(name = "category_id")
     private Integer categoryId;
 
-    @Column(name = "categoryname", nullable = false)
+    @Column(name = "category_name", nullable = false)
     private String categoryName;
 
-    @Column(name = "brand")
+    @Column(name = "brand", nullable = false)
     private String brand;
 
     @Column(name = "model")
@@ -27,19 +27,15 @@ public class ProductCategory {
     @Column(name = "measurement")
     private String measurement;
 
-    @Column(name = "tooltype")
+    @Column(name = "tool_type")
     private String toolType;
 
     @Column(name = "specifications")
     private String specifications;
 
-    @Column(name = "spareparttype")
+    @Column(name = "spare_part_type")
     private String sparePartType;
 
     @Column(name = "compatibility")
     private String compatibility;
-
-    @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products;
-
 }

@@ -1,25 +1,26 @@
 package com.maycollins.LlantasApi.model;
 
+
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
+
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "useraccount")
+@Table(name = "user_account")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserAccount {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "useraccount_userid_seq")
-    @SequenceGenerator(name = "useraccount_userid_seq", sequenceName = "useraccount_userid_seq", allocationSize = 1)
-    @Column(name = "userid", nullable = false, updatable = false)
-    private Long userId;
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -30,45 +31,28 @@ public class UserAccount {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "userrole", nullable = false)
+    @Column(name = "user_role", nullable = false)
     private String userRole;
 
-    @Column(name = "userstatus", nullable = false)
-    private String userStatus = "ACTIVE";
+    @Column(name = "user_status", nullable = false)
+    private String userStatus;
 
-    @Column(name = "creationdate", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creationDate = new Date();
+    @Column(name = "creation_date", nullable = false)
+    private LocalDateTime creationDate;
 
-    @Column(name = "lastaccess")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date lastAccess;
+    @Column(name = "last_access")
+    private LocalDateTime lastAccess;
 
-    @Column(name = "contactphone")
+    @Column(name = "contact_phone")
     private String contactPhone;
 
     @Column(name = "address")
     private String address;
 
-    @Column(name = "modulepermissions", columnDefinition = "jsonb")
-    private String modulePermissionsJson;
+    @Column(name = "module_permissions", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private String modulePermissions;
 
-    @Column(name = "profilepicture")
+    @Column(name = "profile_picture")
     private String profilePicture;
-
-    @Transient
-    private Map<String, List<String>> modulePermissions;
-
-    @PrePersist
-    protected void onCreate() {
-        creationDate = new Date();
-        if (userStatus == null) {
-            userStatus = "ACTIVE";
-        }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        lastAccess = new Date();
-    }
 }
