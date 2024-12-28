@@ -1,6 +1,7 @@
 package com.maycollins.LlantasApi.model;
 
 import jakarta.persistence.*;
+import java.util.Date;
 import java.util.Map;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userid")
+    @Column(name = "userid", nullable = false, updatable = false)
     private Long userId;
 
     @Column(name = "username", nullable = false)
@@ -30,11 +31,11 @@ public class UserAccount {
 
     @Column(name = "creationdate", nullable = false)
     @Temporal(TemporalType.DATE)
-    private java.util.Date creationDate;
+    private Date creationDate = new Date(); // Asignar fecha actual por defecto
 
     @Column(name = "lastaccess")
     @Temporal(TemporalType.DATE)
-    private java.util.Date lastAccess;
+    private Date lastAccess;
 
     @Column(name = "contactphone")
     private String contactPhone;
@@ -98,19 +99,19 @@ public class UserAccount {
         this.userStatus = userStatus;
     }
 
-    public java.util.Date getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(java.util.Date creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
-    public java.util.Date getLastAccess() {
+    public Date getLastAccess() {
         return lastAccess;
     }
 
-    public void setLastAccess(java.util.Date lastAccess) {
+    public void setLastAccess(Date lastAccess) {
         this.lastAccess = lastAccess;
     }
 

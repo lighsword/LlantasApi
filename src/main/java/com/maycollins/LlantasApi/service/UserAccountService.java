@@ -5,6 +5,7 @@ import com.maycollins.LlantasApi.model.UserAccount;
 import com.maycollins.LlantasApi.repository.UserAccountRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,8 +28,15 @@ public class UserAccountService {
     }
 
     public UserAccount createUser(UserAccount userAccount) {
+        // Asignar fecha de creación si no está definida
+        if (userAccount.getCreationDate() == null) {
+            userAccount.setCreationDate(new Date());
+        }
+
+        // Asignar permisos predeterminados
         Map<String, List<String>> rolePermissions = RolePermissions.getPermissionsByRole().get(userAccount.getUserRole());
         userAccount.setModulePermissions(rolePermissions);
+
         return userAccountRepository.save(userAccount);
     }
 

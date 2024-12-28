@@ -16,6 +16,7 @@ public class JsonToMapListConverter implements AttributeConverter<Map<String, Li
     @Override
     public String convertToDatabaseColumn(Map<String, List<String>> attribute) {
         try {
+            // Convertir el Map a una cadena JSON
             return objectMapper.writeValueAsString(attribute);
         } catch (Exception e) {
             throw new IllegalArgumentException("Error converting Map to JSON", e);
@@ -25,6 +26,7 @@ public class JsonToMapListConverter implements AttributeConverter<Map<String, Li
     @Override
     public Map<String, List<String>> convertToEntityAttribute(String dbData) {
         try {
+            // Convertir la cadena JSON a un Map
             return objectMapper.readValue(dbData, new TypeReference<Map<String, List<String>>>() {});
         } catch (Exception e) {
             throw new IllegalArgumentException("Error converting JSON to Map", e);
