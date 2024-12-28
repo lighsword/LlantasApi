@@ -1,10 +1,12 @@
 package com.maycollins.LlantasApi.service;
 
+import com.maycollins.LlantasApi.model.RolePermissions;
 import com.maycollins.LlantasApi.model.UserAccount;
 import com.maycollins.LlantasApi.repository.UserAccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,6 +27,8 @@ public class UserAccountService {
     }
 
     public UserAccount createUser(UserAccount userAccount) {
+        Map<String, List<String>> rolePermissions = RolePermissions.getPermissionsByRole().get(userAccount.getUserRole());
+        userAccount.setModulePermissions(rolePermissions);
         return userAccountRepository.save(userAccount);
     }
 
@@ -37,6 +41,7 @@ public class UserAccountService {
             user.setContactPhone(userDetails.getContactPhone());
             user.setAddress(userDetails.getAddress());
             user.setProfilePicture(userDetails.getProfilePicture());
+            user.setModulePermissions(userDetails.getModulePermissions());
             return userAccountRepository.save(user);
         }).orElseThrow(() -> new RuntimeException("User not found with id " + userId));
     }

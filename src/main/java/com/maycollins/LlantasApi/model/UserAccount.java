@@ -1,7 +1,8 @@
 package com.maycollins.LlantasApi.model;
 
 import jakarta.persistence.*;
-import java.util.Date;
+import java.util.Map;
+import java.util.List;
 
 @Entity
 @Table(name = "useraccount")
@@ -22,18 +23,18 @@ public class UserAccount {
     private String password;
 
     @Column(name = "userrole", nullable = false)
-    private String userRole; // "admin", "seller", "warehouse", "supervisor"
+    private String userRole;
 
     @Column(name = "userstatus", nullable = false)
-    private String userStatus; // "active", "inactive", "blocked"
+    private String userStatus;
 
     @Column(name = "creationdate", nullable = false)
     @Temporal(TemporalType.DATE)
-    private Date creationDate;
+    private java.util.Date creationDate;
 
     @Column(name = "lastaccess")
     @Temporal(TemporalType.DATE)
-    private Date lastAccess;
+    private java.util.Date lastAccess;
 
     @Column(name = "contactphone")
     private String contactPhone;
@@ -42,12 +43,13 @@ public class UserAccount {
     private String address;
 
     @Column(name = "modulepermissions", columnDefinition = "json")
-    private String modulePermissions; // JSON string for permissions
+    @Convert(converter = JsonToMapListConverter.class)
+    private Map<String, List<String>> modulePermissions;
 
     @Column(name = "profilepicture")
-    private String profilePicture; // URL or path to the profile picture
+    private String profilePicture;
 
-    // Getters and Setters
+    // Getters y Setters
     public Long getUserId() {
         return userId;
     }
@@ -96,19 +98,19 @@ public class UserAccount {
         this.userStatus = userStatus;
     }
 
-    public Date getCreationDate() {
+    public java.util.Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(java.util.Date creationDate) {
         this.creationDate = creationDate;
     }
 
-    public Date getLastAccess() {
+    public java.util.Date getLastAccess() {
         return lastAccess;
     }
 
-    public void setLastAccess(Date lastAccess) {
+    public void setLastAccess(java.util.Date lastAccess) {
         this.lastAccess = lastAccess;
     }
 
@@ -128,11 +130,11 @@ public class UserAccount {
         this.address = address;
     }
 
-    public String getModulePermissions() {
+    public Map<String, List<String>> getModulePermissions() {
         return modulePermissions;
     }
 
-    public void setModulePermissions(String modulePermissions) {
+    public void setModulePermissions(Map<String, List<String>> modulePermissions) {
         this.modulePermissions = modulePermissions;
     }
 
