@@ -21,7 +21,7 @@ public class ProductCategoryService {
     }
 
     public ProductCategoryResponseDTO createProductCategory(ProductCategoryDTO dto) {
-        if (productCategoryRepository.existsByCategoryName(dto.getCategoryName())) {
+        if (productCategoryRepository.existsByCategoryName(String.valueOf(dto.getCategoryName()))) {
             throw new RuntimeException("Category name already exists");
         }
         ProductCategory productCategory = convertToEntity(dto);
