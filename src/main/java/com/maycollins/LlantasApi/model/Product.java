@@ -5,7 +5,7 @@ import lombok.Data;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "product")
@@ -14,12 +14,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Integer productId;
 
-    @Column(name = "serial_number", nullable = false, unique = true)
-    private String serialNumber;
+    @Column(name = "product_serial", nullable = false, unique = true)
+    private String productSerial;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private ProductCategory category;
+
+    @Column(name = "stock", nullable = false)
+    private Integer stock;  // Asegúrate de que este campo exista
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;
@@ -28,9 +34,5 @@ public class Product {
     private Boolean isDefective;
 
     @Column(name = "warranty_period")
-    private LocalDateTime warrantyPeriod;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", nullable = false)
-    private ProductCategory category;
+    private LocalDate warrantyPeriod;
 }

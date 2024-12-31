@@ -4,16 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductResponseDTO {
     private Integer productId;
-    private String serialNumber;
+    private String productSerial;
+    private ProductCategoryResponseDTO category;
+    private Integer stock;
     private BigDecimal price;
     private Boolean isDefective;
-    private LocalDateTime warrantyPeriod;
-    private ProductCategoryResponseDTO category;
+    private LocalDate warrantyPeriod;
+    private String imageUrl;
+    private Boolean stockAlert;  // Para indicar si el stock está bajo
 }

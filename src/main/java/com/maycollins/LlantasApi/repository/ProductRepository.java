@@ -7,8 +7,8 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    boolean existsBySerialNumber(String serialNumber); // Cambiado de productSerial a serialNumber
-    List<Product> findByCategory_CategoryId(Integer categoryId);
+    boolean existsByProductSerial(String productSerial);
+    List<Product> findByStockLessThan(Integer minStock);
+    List<Product> findByCategoryCategoryId(Integer categoryId);
     List<Product> findByIsDefective(Boolean isDefective);
-    List<Product> findByStockLessThan(Integer stockMinimo);
 }
