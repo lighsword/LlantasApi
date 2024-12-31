@@ -1,30 +1,52 @@
 package com.maycollins.LlantasApi.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import jakarta.persistence.*;
-import java.util.Date;
+import lombok.NoArgsConstructor;
 
-@Data
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "receipt")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Receipt {
     @Id
-    private Integer receiptid;
-    private Date issuedate;
-    private Double total;
-    private String details;
-    private String receipttype;
-    private String receiptseries;
-    private String paymentmethod;
-    private String receiptstatus;
-    @Column(columnDefinition = "json")
-    private String billingdata;
+    @Column(name = "receipt_id")
+    private Integer receiptId;
 
     @ManyToOne
-    @JoinColumn(name = "saleid")
+    @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
 
     @ManyToOne
-    @JoinColumn(name = "customerid")
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @Column(name = "issue_date", nullable = false)
+    private LocalDateTime issueDate;
+
+    @Column(name = "total", nullable = false)
+    private BigDecimal total;
+
+    @Column(name = "details")
+    private String details;
+
+    @Column(name = "receipt_type", nullable = false)
+    private String receiptType;
+
+    @Column(name = "receipt_series", nullable = false)
+    private String receiptSeries;
+
+    @Column(name = "payment_method", nullable = false)
+    private String paymentMethod;
+
+    @Column(name = "receipt_status", nullable = false)
+    private String receiptStatus;
+
+    @Column(name = "billing_data", nullable = false, columnDefinition = "json")
+    private String billingData;
 }

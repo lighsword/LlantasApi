@@ -1,33 +1,53 @@
 package com.maycollins.LlantasApi.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import java.util.Date;
 
-@Data
 @Entity
 @Table(name = "sale")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Sale {
     @Id
-    private Integer saleid;
-    private Date saledate;
-    private Integer soldquantity;
-    private Double subtotal;
-    private Double taxes;
-    private Double total;
-    private Double discount;
-    private String paymentmethod;
+    @Column(name = "sale_id")
+    private Integer saleId;
+
+    @Column(name = "sale_date", nullable = false)
+    private LocalDateTime saleDate;
 
     @ManyToOne
-    @JoinColumn(name = "customerid")
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "productid")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Column(name = "sold_quantity", nullable = false)
+    private Integer soldQuantity;
+
+    @Column(name = "subtotal", nullable = false)
+    private BigDecimal subtotal;
+
+    @Column(name = "taxes", nullable = false)
+    private BigDecimal taxes;
+
+    @Column(name = "total", nullable = false)
+    private BigDecimal total;
+
+    @Column(name = "discount")
+    private BigDecimal discount;
+
     @ManyToOne
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserAccount userAccount;
+
+    @Column(name = "payment_method", nullable = false)
+    private String paymentMethod;
 }

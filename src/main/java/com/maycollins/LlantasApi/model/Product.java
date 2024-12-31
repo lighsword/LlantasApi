@@ -1,38 +1,38 @@
 package com.maycollins.LlantasApi.model;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.Date;
+import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
-@Data
 @Table(name = "product")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "productid")
-    private Integer productid;
+    @Column(name = "product_id")
+    private Integer productId;
 
-    @Column(name = "productserial", nullable = false)
-    private String productserial;
+    @Column(name = "product_serial", nullable = false, unique = true)
+    private String productSerial;
 
     @ManyToOne
-    @JoinColumn(name = "categoryid", nullable = false)
-    private ProductCategory productcategory;
+    @JoinColumn(name = "category_id", nullable = false)
+    private ProductCategory category;
 
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
     @Column(name = "price", nullable = false)
-    private Double price;
+    private BigDecimal price;
 
-    @Column(name = "isdefective")
-    private Boolean isdefective;
+    @Column(name = "is_defective")
+    private Boolean isDefective;
 
-    @Column(name = "warrantyperiod")
-    @Temporal(TemporalType.DATE)
-    private Date warrantyperiod;
-
+    @Column(name = "warranty_period")
+    private LocalDate warrantyPeriod;
 }
