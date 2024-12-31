@@ -3,7 +3,6 @@ package com.maycollins.LlantasApi.controller;
 import com.maycollins.LlantasApi.DTO.UserAccountDTO;
 import com.maycollins.LlantasApi.DTO.UserAccountResponseDTO;
 import com.maycollins.LlantasApi.service.UserAccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +16,13 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class UserAccountController {
 
-    @Autowired
-    private UserAccountService userAccountService;
+
+    private final UserAccountService userAccountService;
+
+    // Constructor para la inyección de dependencias
+    public UserAccountController(UserAccountService userAccountService) {
+        this.userAccountService = userAccountService;
+    }
 
     @PostMapping
     public ResponseEntity<UserAccountResponseDTO> createUser(@RequestBody UserAccountDTO userDTO) {
