@@ -1,5 +1,6 @@
 package com.maycollins.LlantasApi.model;
 
+import com.maycollins.LlantasApi.enums.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import jakarta.persistence.*;
@@ -15,8 +16,9 @@ public class ProductCategory {
     @Column(name = "category_id")
     private Integer categoryId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "category_name", nullable = false)
-    private String categoryName;
+    private CategoryType categoryName;
 
     @Column(name = "brand", nullable = false)
     private String brand;

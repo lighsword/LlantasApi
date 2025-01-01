@@ -25,7 +25,7 @@ public class Product {
     private ProductCategory category;
 
     @Column(name = "stock", nullable = false)
-    private Integer stock;
+    private Integer stock;  // Asegúrate de que este campo exista
 
     @Column(name = "price", nullable = false)
     private BigDecimal price;

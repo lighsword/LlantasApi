@@ -1,5 +1,6 @@
 package com.maycollins.LlantasApi.DTO;
 
+import com.maycollins.LlantasApi.enums.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductCategoryDTO {
     private Integer categoryId;
-    private String categoryName;
+    private CategoryType categoryName;
     private String brand;
     private String model;
     private String measurement;
