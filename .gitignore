@@ -1,24 +1,18 @@
 ```
 # Compiled and build artifacts
 *.class
-*.o
-*.obj
-*.out
-*.dll
-*.so
-*.a
-
-# Dependencies
-lib/
-target/
 *.jar
 *.war
 *.ear
+target/
+
+# Dependencies
+lib/
+libs/
 
 # Logs and temp files
 *.log
 *.tmp
-*.swp
 
 # Environment
 .env
@@ -28,21 +22,23 @@ target/
 # Editors
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# OS generated files
+# OS
 .DS_Store
 Thumbs.db
 
-# Coverage reports
+# Test and coverage
+test-results/
 coverage/
 htmlcov/
-.coverage
+*.coverage
 
 # Gradle
 .gradle/
 build/
 
-# Maven
-target/
-
+# Maven (from pom.xml detection)
+.mvn/
 ```

@@ -129,65 +129,69 @@ public class StartupMessage implements CommandLineRunner {
         if (productoRepository.count() == 0) {
             List<CategoriaProducto> categorias = categoriaProductoRepository.findAll();
             
-            List<Producto> productos = Arrays.asList(
-                Producto.builder()
-                    .nombreProducto("Llanta Radial 195/65R15")
-                    .descripcion("Llanta radial para automóvil, tamaño 195/65R15, ideal para uso urbano y carretera.")
-                    .categoriaProducto(categorias.get(0))
-                    .precio(120.0)
-                    .stock(50)
-                    .marca("Michelin")
-                    .modelo("Energy XM2")
-                    .imagenUrl("https://example.com/images/llanta1.jpg")
-                    .activo(true)
-                    .build(),
-                Producto.builder()
-                    .nombreProducto("Llanta 225/60R17")
-                    .descripcion("Llanta de alto rendimiento para vehículos deportivos, tamaño 225/60R17.")
-                    .categoriaProducto(categorias.get(0))
-                    .precio(180.0)
-                    .stock(30)
-                    .marca("Continental")
-                    .modelo("PremiumContact 6")
-                    .imagenUrl("https://example.com/images/llanta2.jpg")
-                    .activo(true)
-                    .build(),
-                Producto.builder()
-                    .nombreProducto("Llanta para Camión 295/75R22.5")
-                    .descripcion("Llanta radial para camiones pesados, resistente y duradera.")
-                    .categoriaProducto(categorias.get(1))
-                    .precio(450.0)
-                    .stock(20)
-                    .marca("Goodyear")
-                    .modelo("G277")
-                    .imagenUrl("https://example.com/images/llanta3.jpg")
-                    .activo(true)
-                    .build(),
-                Producto.builder()
-                    .nombreProducto("Llanta Moto 110/70R17")
-                    .descripcion("Llanta para motocicleta deportiva, tamaño 110/70R17.")
-                    .categoriaProducto(categorias.get(2))
-                    .precio(80.0)
-                    .stock(40)
-                    .marca("Pirelli")
-                    .modelo("Diablo Rosso III")
-                    .imagenUrl("https://example.com/images/llanta4.jpg")
-                    .activo(true)
-                    .build(),
-                Producto.builder()
-                    .nombreProducto("Llanta Agrícola 420/85R34")
-                    .descripcion("Llanta para tractor agrícola, diseño especial para campo.")
-                    .categoriaProducto(categorias.get(3))
-                    .precio(600.0)
-                    .stock(10)
-                    .marca("Firestone")
-                    .modelo("Agriboss R1/W")
-                    .imagenUrl("https://example.com/images/llanta5.jpg")
-                    .activo(true)
-                    .build()
-            );
-            productoRepository.saveAll(productos);
-            System.out.println("Productos creados: " + productos.size());
+            if (!categorias.isEmpty()) {
+                List<Producto> productos = Arrays.asList(
+                    Producto.builder()
+                        .nombreProducto("Llanta Radial 195/65R15")
+                        .descripcion("Llanta radial para automóvil, tamaño 195/65R15, ideal para uso urbano y carretera.")
+                        .categoriaProducto(categorias.get(0))
+                        .precio(120.0)
+                        .stock(50)
+                        .marca("Michelin")
+                        .modelo("Energy XM2")
+                        .imagenUrl("https://example.com/images/llanta1.jpg")
+                        .activo(true)
+                        .build(),
+                    Producto.builder()
+                        .nombreProducto("Llanta 225/60R17")
+                        .descripcion("Llanta de alto rendimiento para vehículos deportivos, tamaño 225/60R17.")
+                        .categoriaProducto(categorias.get(0))
+                        .precio(180.0)
+                        .stock(30)
+                        .marca("Continental")
+                        .modelo("PremiumContact 6")
+                        .imagenUrl("https://example.com/images/llanta2.jpg")
+                        .activo(true)
+                        .build(),
+                    Producto.builder()
+                        .nombreProducto("Llanta para Camión 295/75R22.5")
+                        .descripcion("Llanta radial para camiones pesados, resistente y duradera.")
+                        .categoriaProducto(categorias.get(1))
+                        .precio(450.0)
+                        .stock(20)
+                        .marca("Goodyear")
+                        .modelo("G277")
+                        .imagenUrl("https://example.com/images/llanta3.jpg")
+                        .activo(true)
+                        .build(),
+                    Producto.builder()
+                        .nombreProducto("Llanta Moto 110/70R17")
+                        .descripcion("Llanta para motocicleta deportiva, tamaño 110/70R17.")
+                        .categoriaProducto(categorias.get(2))
+                        .precio(80.0)
+                        .stock(40)
+                        .marca("Pirelli")
+                        .modelo("Diablo Rosso III")
+                        .imagenUrl("https://example.com/images/llanta4.jpg")
+                        .activo(true)
+                        .build(),
+                    Producto.builder()
+                        .nombreProducto("Llanta Agrícola 420/85R34")
+                        .descripcion("Llanta para tractor agrícola, diseño especial para campo.")
+                        .categoriaProducto(categorias.get(3))
+                        .precio(600.0)
+                        .stock(10)
+                        .marca("Firestone")
+                        .modelo("Agriboss R1/W")
+                        .imagenUrl("https://example.com/images/llanta5.jpg")
+                        .activo(true)
+                        .build()
+                );
+                productoRepository.saveAll(productos);
+                System.out.println("Productos creados: " + productos.size());
+            } else {
+                System.out.println("No se crearon productos porque no hay categorías disponibles.");
+            }
         }
 
         System.out.println("Datos de ejemplo inicializados correctamente.");
