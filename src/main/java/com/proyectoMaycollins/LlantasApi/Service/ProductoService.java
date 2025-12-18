@@ -22,18 +22,18 @@ public class ProductoService {
         return productoRepository.save(producto);
     }
 
-    public @NonNull Producto actualizar(Long id, Producto producto) {
+    public @NonNull Producto actualizar(@NonNull Long id, @NonNull Producto producto) {
         log.info("Actualizando producto con ID: {}", id);
         producto.setProductoId(id);
         return productoRepository.save(producto);
     }
 
-    public void eliminar(Long id) {
+    public void eliminar(@NonNull Long id) {
         log.info("Eliminando producto con ID: {}", id);
         productoRepository.deleteById(id);
     }
 
-    public @NonNull Producto encontrarPorId(Long id) {
+    public @NonNull Producto encontrarPorId(@NonNull Long id) {
         log.info("Buscando producto con ID: {}", id);
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
