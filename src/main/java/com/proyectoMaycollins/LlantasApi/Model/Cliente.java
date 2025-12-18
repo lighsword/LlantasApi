@@ -28,5 +28,6 @@ public class Cliente {
     private String direccion;
 
     @Column(name = "activo")
+    @Builder.Default
     private Boolean activo = true;
 }

@@ -6,6 +6,7 @@ import com.proyectoMaycollins.LlantasApi.DTO.RegisterRequest;
 import com.proyectoMaycollins.LlantasApi.Model.User;
 import com.proyectoMaycollins.LlantasApi.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;

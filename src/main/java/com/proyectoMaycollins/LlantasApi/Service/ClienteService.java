@@ -5,6 +5,7 @@ import com.proyectoMaycollins.LlantasApi.Repository.ClienteRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +17,12 @@ import java.util.List;
 public class ClienteService {
     private final ClienteRepository clienteRepository;
 
-    public Cliente crear(Cliente cliente) {
+    public @NonNull Cliente crear(Cliente cliente) {
         log.info("Creando nuevo cliente: {}", cliente.getNombre());
         return clienteRepository.save(cliente);
     }
 
-    public Cliente actualizar(Long id, Cliente cliente) {
+    public @NonNull Cliente actualizar(Long id, Cliente cliente) {
         log.info("Actualizando cliente con ID: {}", id);
         cliente.setClienteId(id);
         return clienteRepository.save(cliente);
@@ -32,7 +33,7 @@ public class ClienteService {
         clienteRepository.deleteById(id);
     }
 
-    public Cliente encontrarPorId(Long id) {
+    public @NonNull Cliente encontrarPorId(Long id) {
         log.info("Buscando cliente con ID: {}", id);
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + id));

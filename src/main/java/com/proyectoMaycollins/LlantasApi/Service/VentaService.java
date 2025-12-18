@@ -5,6 +5,7 @@ import com.proyectoMaycollins.LlantasApi.Repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ public class VentaService {
     private final ProductoRepository productoRepository;
     private final UserService userService;
 
-    public Venta crearVenta(Venta venta, List<DetalleVenta> detalles) {
+    public @NonNull Venta crearVenta(Venta venta, List<DetalleVenta> detalles) {
         log.info("Creando nueva venta para cliente ID: {}", venta.getCliente().getClienteId());
         
         // Validar cliente
@@ -70,7 +71,7 @@ public class VentaService {
         return ventaRepository.save(ventaGuardada);
     }
 
-    public Venta encontrarPorId(Long id) {
+    public @NonNull Venta encontrarPorId(Long id) {
         log.info("Buscando venta con ID: {}", id);
         return ventaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + id));
