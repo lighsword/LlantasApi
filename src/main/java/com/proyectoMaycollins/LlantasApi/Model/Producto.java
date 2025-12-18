@@ -38,5 +38,6 @@ public class Producto {
     private String imagenUrl;
     
     @Column(name = "activo")
+    @Builder.Default
     private Boolean activo = true;
 }

@@ -1,18 +1,24 @@
 ```
-# Java/Maven specific
-target/
+# Compiled and build artifacts
 *.class
+*.o
+*.obj
+*.out
+*.dll
+*.so
+*.a
+
+# Dependencies
+lib/
+target/
 *.jar
 *.war
 *.ear
-*.jks
-
-# Dependencies
-.m2/
 
 # Logs and temp files
 *.log
 *.tmp
+*.swp
 
 # Environment
 .env
@@ -22,13 +28,21 @@ target/
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
 
 # OS generated files
 .DS_Store
 Thumbs.db
 
-# Testing
-test-reports/
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+target/
+
 ```

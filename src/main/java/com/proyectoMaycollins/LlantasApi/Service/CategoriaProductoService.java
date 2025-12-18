@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,14 +25,14 @@ public class CategoriaProductoService {
         this.categoriaProductoRepository = categoriaProductoRepository;
     }
 
-    public CategoriaProducto crear(CategoriaProductoDTO dto) {
+    public @NonNull CategoriaProducto crear(CategoriaProductoDTO dto) {
         validarCategoria(dto);
         CategoriaProducto categoria = new CategoriaProducto();
         BeanUtils.copyProperties(dto, categoria);
         return categoriaProductoRepository.save(categoria);
     }
 
-    public CategoriaProducto actualizar(Long id, CategoriaProductoDTO dto) {
+    public @NonNull CategoriaProducto actualizar(Long id, CategoriaProductoDTO dto) {
         CategoriaProducto categoria = encontrarPorId(id);
         BeanUtils.copyProperties(dto, categoria);
         return categoriaProductoRepository.save(categoria);
@@ -42,7 +43,7 @@ public class CategoriaProductoService {
         categoriaProductoRepository.delete(categoria);
     }
 
-    public CategoriaProducto encontrarPorId(Long id) {
+    public @NonNull CategoriaProducto encontrarPorId(Long id) {
         return categoriaProductoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con ID: " + id));
     }
