@@ -32,18 +32,18 @@ public class CategoriaProductoService {
         return categoriaProductoRepository.save(categoria);
     }
 
-    public @NonNull CategoriaProducto actualizar(Long id, CategoriaProductoDTO dto) {
+    public @NonNull CategoriaProducto actualizar(@NonNull Long id, @NonNull CategoriaProductoDTO dto) {
         CategoriaProducto categoria = encontrarPorId(id);
         BeanUtils.copyProperties(dto, categoria);
         return categoriaProductoRepository.save(categoria);
     }
 
-    public void eliminar(Long id) {
+    public void eliminar(@NonNull Long id) {
         CategoriaProducto categoria = encontrarPorId(id);
         categoriaProductoRepository.delete(categoria);
     }
 
-    public @NonNull CategoriaProducto encontrarPorId(Long id) {
+    public @NonNull CategoriaProducto encontrarPorId(@NonNull Long id) {
         return categoriaProductoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con ID: " + id));
     }

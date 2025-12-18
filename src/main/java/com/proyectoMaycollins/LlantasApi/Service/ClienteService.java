@@ -22,18 +22,18 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    public @NonNull Cliente actualizar(Long id, Cliente cliente) {
+    public @NonNull Cliente actualizar(@NonNull Long id, @NonNull Cliente cliente) {
         log.info("Actualizando cliente con ID: {}", id);
         cliente.setClienteId(id);
         return clienteRepository.save(cliente);
     }
 
-    public void eliminar(Long id) {
+    public void eliminar(@NonNull Long id) {
         log.info("Eliminando cliente con ID: {}", id);
         clienteRepository.deleteById(id);
     }
 
-    public @NonNull Cliente encontrarPorId(Long id) {
+    public @NonNull Cliente encontrarPorId(@NonNull Long id) {
         log.info("Buscando cliente con ID: {}", id);
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + id));
@@ -44,7 +44,7 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
-    public Cliente findByDocumentoIdentidad(String documentoIdentidad) {
+    public Cliente findByDocumentoIdentidad(@NonNull String documentoIdentidad) {
         log.info("Buscando cliente con documento: {}", documentoIdentidad);
         return clienteRepository.findByDocumentoIdentidad(documentoIdentidad)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con documento: " + documentoIdentidad));
