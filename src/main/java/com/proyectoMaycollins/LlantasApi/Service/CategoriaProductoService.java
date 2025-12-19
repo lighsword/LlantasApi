@@ -53,8 +53,8 @@ public class CategoriaProductoService {
     }
 
     private void validarCategoria(CategoriaProductoDTO dto) {
-        if (categoriaProductoRepository.existsByNombreCategoria(dto.getNombreCategoria())) {
-            throw new DuplicateResourceException("Ya existe una categoría con el nombre: " + dto.getNombreCategoria());
+        if (categoriaProductoRepository.existsByNombre(dto.getNombre())) {
+            throw new DuplicateResourceException("Ya existe una categoría con el nombre: " + dto.getNombre());
         }
     }
 }

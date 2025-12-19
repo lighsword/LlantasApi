@@ -11,7 +11,7 @@ import lombok.Builder;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builder")
+@Builder
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

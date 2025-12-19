@@ -11,7 +11,7 @@ import lombok.Builder;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderMethodName = "builder")
+@Builder
 public class CategoriaProducto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +23,6 @@ public class CategoriaProducto {
     private String descripcion;
     
     @Column(name = "activo")
+    @Builder.Default
     private Boolean activo = true;
 }

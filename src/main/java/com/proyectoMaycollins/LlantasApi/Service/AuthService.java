@@ -6,8 +6,6 @@ import com.proyectoMaycollins.LlantasApi.DTO.RegisterRequest;
 import com.proyectoMaycollins.LlantasApi.Model.User;
 import com.proyectoMaycollins.LlantasApi.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,7 +43,7 @@ public class AuthService {
                 )
         );
         
-        @NonNull User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
         var token = jwtService.generateToken(user);
         
         return JwtAuthenticationResponse.builder()

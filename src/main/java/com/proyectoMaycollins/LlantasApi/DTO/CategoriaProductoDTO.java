@@ -2,15 +2,11 @@ package com.proyectoMaycollins.LlantasApi.DTO;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoriaProductoDTO {
-    private String nombreCategoria;
-    private String modelo;
-    private String medida;
-    private String especificaciones;
-    private String tipoRefaccion;
-    private String compatibilidad;
+    private String nombre;
+    private String descripcion;
+    private Boolean activo;
 }
