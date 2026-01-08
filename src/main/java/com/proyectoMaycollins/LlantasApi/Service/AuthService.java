@@ -1,53 +1,41 @@
 package com.proyectoMaycollins.LlantasApi.Service;
 
-import com.proyectoMaycollins.LlantasApi.DTO.JwtAuthenticationResponse;
-import com.proyectoMaycollins.LlantasApi.DTO.LoginRequest;
-import com.proyectoMaycollins.LlantasApi.DTO.RegisterRequest;
-import com.proyectoMaycollins.LlantasApi.Model.User;
-import com.proyectoMaycollins.LlantasApi.Repository.UserRepository;
+import com.proyectoMaycollins.LlantasApi.Model.Usuarios;
+import com.proyectoMaycollins.LlantasApi.Model.enums.Role;
+import com.proyectoMaycollins.LlantasApi.Repository.UsuariosRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private final UsuariosRepository usuariosRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
 
-    public JwtAuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+    public Usuarios register(String email, String nombre, String password, Role rol) {
+        if (usuariosRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("Email ya registrado");
+        }
+        Usuarios user = Usuarios.builder()
+                .email(email)
+                .nombre(nombre)
+                .password(passwordEncoder.encode(password))
+                .rol(rol)
+                .activo(true)
                 .build();
-        
-        user = userRepository.save(user);
-        var token = jwtService.generateToken(user);
-        
-        return JwtAuthenticationResponse.builder()
-                .token(token)
-                .build();
+        return usuariosRepository.save(user);
     }
 
-    public JwtAuthenticationResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
-        
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-        var token = jwtService.generateToken(user);
-        
-        return JwtAuthenticationResponse.builder()
-                .token(token)
-                .build();
+    public Optional<Usuarios> validateUser(String email, String rawPassword) {
+        return usuariosRepository.findByEmail(email)
+                .filter(u -> passwordEncoder.matches(rawPassword, u.getPassword()));
+    }
+
+    public Optional<Usuarios> findByEmail(String email) {
+        return usuariosRepository.findByEmail(email);
     }
 }

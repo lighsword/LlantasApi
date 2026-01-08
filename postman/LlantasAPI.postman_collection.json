@@ -1,0 +1,862 @@
+{
+	"info": {
+		"_postman_id": "llantasapi-collection",
+		"name": "🚗 LlantasAPI",
+		"description": "API REST para gestión de tienda de llantas con autenticación JWT y sistema RBAC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "🔐 Autenticación",
+			"item": [
+				{
+					"name": "Registrar Usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refresh_token', jsonData.refreshToken);",
+									"    console.log('✅ Tokens guardados automáticamente');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@ejemplo.com\",\n  \"nombre\": \"Administrador\",\n  \"password\": \"admin123\",\n  \"rol\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Registra un nuevo usuario. Roles: ADMIN, VENDEDOR, ALMACENISTA, COMPRADOR"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refresh_token', jsonData.refreshToken);",
+									"    console.log('✅ Tokens guardados automáticamente');",
+									"    console.log('Usuario:', jsonData.usuario.email);",
+									"    console.log('Rol:', jsonData.usuario.rol);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@ejemplo.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Inicia sesión y obtiene tokens JWT"
+					}
+				},
+				{
+					"name": "Refrescar Tokens",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('access_token', jsonData.accessToken);",
+									"    pm.collectionVariables.set('refresh_token', jsonData.refreshToken);",
+									"    console.log('✅ Tokens rotados y guardados');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "refresh"]
+						},
+						"description": "Renueva ambos tokens (rotación completa)"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						},
+						"description": "Cierra la sesión actual"
+					}
+				},
+				{
+					"name": "Logout All (Todas las sesiones)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout-all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout-all"]
+						},
+						"description": "Cierra todas las sesiones del usuario"
+					}
+				}
+			]
+		},
+		{
+			"name": "👤 Usuarios (ADMIN)",
+			"item": [
+				{
+					"name": "Listar Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios"]
+						}
+					}
+				},
+				{
+					"name": "Obtener Usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "1"]
+						}
+					}
+				},
+				{
+					"name": "Crear Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"vendedor@ejemplo.com\",\n  \"nombre\": \"Vendedor Test\",\n  \"password\": \"vendedor123\",\n  \"rol\": \"VENDEDOR\",\n  \"activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Usuario",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Nombre Actualizado\",\n  \"activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "1"]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/usuarios/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "usuarios", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Productos",
+			"item": [
+				{
+					"name": "Listar Todos (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "productos"]
+						}
+					}
+				},
+				{
+					"name": "Productos Visibles (Catálogo)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/visibles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "productos", "visibles"]
+						},
+						"description": "Productos con stock > 0 y activo = true"
+					}
+				},
+				{
+					"name": "Productos Agotados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/agotados",
+							"host": ["{{base_url}}"],
+							"path": ["api", "productos", "agotados"]
+						}
+					}
+				},
+				{
+					"name": "Productos Descontinuados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/descontinuados",
+							"host": ["{{base_url}}"],
+							"path": ["api", "productos", "descontinuados"]
+						}
+					}
+				},
+				{
+					"name": "Buscar Productos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/buscar?q=michelin",
+							"host": ["{{base_url}}"],
+							"path": ["api", "productos", "buscar"],
+							"query": [
+								{
+									"key": "q",
+									"value": "michelin"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Producto por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "productos", "1"]
+						}
+					}
+				},
+				{
+					"name": "Estadísticas de Visibilidad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/productos/estadisticas-visibilidad",
+							"host": ["{{base_url}}"],
+							"path": ["api", "productos", "estadisticas-visibilidad"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👥 Clientes",
+			"item": [
+				{
+					"name": "Listar Clientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/clientes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clientes"]
+						}
+					}
+				},
+				{
+					"name": "Clientes Activos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/clientes/activos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clientes", "activos"]
+						}
+					}
+				},
+				{
+					"name": "Buscar por Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/clientes/email/cliente@ejemplo.com",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clientes", "email", "cliente@ejemplo.com"]
+						}
+					}
+				},
+				{
+					"name": "Crear Cliente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"email\": \"juan@ejemplo.com\",\n  \"telefono\": \"999888777\",\n  \"documentoIdentidad\": \"12345678\",\n  \"direccion\": \"Av. Principal 123\",\n  \"activo\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clientes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "clientes"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "💰 Ventas",
+			"item": [
+				{
+					"name": "Listar Ventas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ventas",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ventas"]
+						}
+					}
+				},
+				{
+					"name": "Obtener Venta por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ventas/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ventas", "1"]
+						}
+					}
+				},
+				{
+					"name": "Detalles de Venta",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ventas/1/detalles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ventas", "1", "detalles"]
+						}
+					}
+				},
+				{
+					"name": "Crear Venta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clienteId\": 1,\n  \"usuarioId\": 1,\n  \"observaciones\": \"Venta al contado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ventas",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ventas"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📊 Inventario",
+			"item": [
+				{
+					"name": "Listar Inventario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/inventario",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inventario"]
+						}
+					}
+				},
+				{
+					"name": "Inventario por Almacén",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/inventario/almacen/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inventario", "almacen", "1"]
+						}
+					}
+				},
+				{
+					"name": "Inventario por Producto",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/inventario/producto/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "inventario", "producto", "1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔐 Permisos RBAC",
+			"item": [
+				{
+					"name": "Mis Permisos (Frontend)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/permisos/mis-permisos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permisos", "mis-permisos"]
+						},
+						"description": "Retorna permisos del usuario actual para controlar la UI"
+					}
+				},
+				{
+					"name": "Verificar Permiso Específico",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/permisos/verificar?modulo=VENTAS&accion=CREAR",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permisos", "verificar"],
+							"query": [
+								{
+									"key": "modulo",
+									"value": "VENTAS"
+								},
+								{
+									"key": "accion",
+									"value": "CREAR"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Permisos de un Rol (ADMIN)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/permisos/Role/VENDEDOR",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permisos", "Role", "VENDEDOR"]
+						}
+					}
+				},
+				{
+					"name": "Matriz Completa (ADMIN)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/permisos/matriz",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permisos", "matriz"]
+						}
+					}
+				},
+				{
+					"name": "Inicializar Permisos (ADMIN)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/permisos/inicializar",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permisos", "inicializar"]
+						}
+					}
+				},
+				{
+					"name": "Actualizar Permiso (ADMIN)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/permisos?rol=VENDEDOR&modulo=VENTAS&accion=ELIMINAR&permitido=true&descripcion=Permitir eliminar ventas",
+							"host": ["{{base_url}}"],
+							"path": ["api", "permisos"],
+							"query": [
+								{
+									"key": "rol",
+									"value": "VENDEDOR"
+								},
+								{
+									"key": "modulo",
+									"value": "VENTAS"
+								},
+								{
+									"key": "accion",
+									"value": "ELIMINAR"
+								},
+								{
+									"key": "permitido",
+									"value": "true"
+								},
+								{
+									"key": "descripcion",
+									"value": "Permitir eliminar ventas"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🛡️ Seguridad (ADMIN)",
+			"item": [
+				{
+					"name": "Resumen de Seguridad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/resumen",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "resumen"]
+						}
+					}
+				},
+				{
+					"name": "Estadísticas de Accesos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/estadisticas?horasAtras=24",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "estadisticas"],
+							"query": [
+								{
+									"key": "horasAtras",
+									"value": "24"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Verificar IP Sospechosa",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/ip-sospechosa?ip=192.168.1.1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "ip-sospechosa"],
+							"query": [
+								{
+									"key": "ip",
+									"value": "192.168.1.1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Auditoría de Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/auditoria/usuario/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "auditoria", "usuario", "1"]
+						}
+					}
+				},
+				{
+					"name": "Auditoría por IP",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/auditoria/ip/127.0.0.1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "auditoria", "ip", "127.0.0.1"]
+						}
+					}
+				},
+				{
+					"name": "Auditoría por Acción",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/auditoria/accion/LOGIN?horasAtras=24",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "auditoria", "accion", "LOGIN"],
+							"query": [
+								{
+									"key": "horasAtras",
+									"value": "24"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Sesiones de Usuario",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/sesiones/usuario/1",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "sesiones", "usuario", "1"]
+						}
+					}
+				},
+				{
+					"name": "Cerrar Todas las Sesiones",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/sesiones/cerrar-todas/1?motivo=Sospecha de compromiso",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "sesiones", "cerrar-todas", "1"],
+							"query": [
+								{
+									"key": "motivo",
+									"value": "Sospecha de compromiso"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Ejecutar Análisis Manual",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seguridad/analizar",
+							"host": ["{{base_url}}"],
+							"path": ["api", "seguridad", "analizar"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📁 Otros Módulos",
+			"item": [
+				{
+					"name": "Categorías",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/categorias",
+							"host": ["{{base_url}}"],
+							"path": ["api", "categorias"]
+						}
+					}
+				},
+				{
+					"name": "Almacenes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/almacenes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "almacenes"]
+						}
+					}
+				},
+				{
+					"name": "Proveedores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/proveedores",
+							"host": ["{{base_url}}"],
+							"path": ["api", "proveedores"]
+						}
+					}
+				},
+				{
+					"name": "Compras",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/compras",
+							"host": ["{{base_url}}"],
+							"path": ["api", "compras"]
+						}
+					}
+				},
+				{
+					"name": "Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/dashboard/resumen",
+							"host": ["{{base_url}}"],
+							"path": ["api", "dashboard", "resumen"]
+						}
+					}
+				},
+				{
+					"name": "Enums (Roles, Módulos, etc)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/enums/roles",
+							"host": ["{{base_url}}"],
+							"path": ["api", "enums", "roles"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
+
