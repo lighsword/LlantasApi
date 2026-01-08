@@ -27,7 +27,4 @@ public class Almacenes {
 
     @Column(name = "activo")
     private Boolean activo;
-
-    @Column(name = "responsable", length = 100)
-    private String responsable;
 }

@@ -41,15 +41,18 @@ public class ProductosService {
     public Optional<Productos> update(Long id, Productos cambios) {
         return productosRepository.findById(id).map(existing -> {
             existing.setCodigoProducto(cambios.getCodigoProducto());
+            existing.setNombre(cambios.getNombre());
             existing.setDescripcion(cambios.getDescripcion());
             existing.setImagenUrl(cambios.getImagenUrl());
             existing.setPrecioVenta(cambios.getPrecioVenta());
             existing.setPrecioMayorista(cambios.getPrecioMayorista());
-            existing.setPrecioComprado(cambios.getPrecioComprado());
+            existing.setPrecioCompra(cambios.getPrecioCompra());
             existing.setActivo(cambios.getActivo());
-            existing.setCategoria(cambios.getCategoria());  // Cambiar a setCategoria
+            existing.setCategoriaId(cambios.getCategoriaId());
             existing.setMarca(cambios.getMarca());
             existing.setModelo(cambios.getModelo());
+            existing.setStockActual(cambios.getStockActual());
+            existing.setStockMinimo(cambios.getStockMinimo());
             return productosRepository.save(existing);
         });
     }

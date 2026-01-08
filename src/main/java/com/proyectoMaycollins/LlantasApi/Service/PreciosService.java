@@ -66,7 +66,7 @@ public class PreciosService {
         // Actualizar precio de compra
         if (dto.getPrecioCompra() != null) {
             guardarPrecioInterno(dto.getProductosId(), TipoPrecio.COMPRA, dto.getPrecioCompra());
-            producto.setPrecioComprado(dto.getPrecioCompra());
+            producto.setPrecioCompra(dto.getPrecioCompra());
         }
 
         // Actualizar precio de venta
@@ -98,7 +98,7 @@ public class PreciosService {
         Map<TipoPrecio, BigDecimal> preciosMap = preciosActivos.stream()
                 .collect(Collectors.toMap(Precios::getTipo, Precios::getPrecio));
 
-        BigDecimal precioCompra = preciosMap.getOrDefault(TipoPrecio.COMPRA, producto.getPrecioComprado());
+        BigDecimal precioCompra = preciosMap.getOrDefault(TipoPrecio.COMPRA, producto.getPrecioCompra());
         BigDecimal precioVenta = preciosMap.getOrDefault(TipoPrecio.VENTA, producto.getPrecioVenta());
         BigDecimal precioMayorista = preciosMap.getOrDefault(TipoPrecio.MAYORISTA, producto.getPrecioMayorista());
 
@@ -210,7 +210,7 @@ public class PreciosService {
     private void actualizarPreciosEnProducto(Productos producto, TipoPrecio tipo, BigDecimal precio) {
         switch (tipo) {
             case COMPRA:
-                producto.setPrecioComprado(precio);
+                producto.setPrecioCompra(precio);
                 break;
             case VENTA:
                 producto.setPrecioVenta(precio);

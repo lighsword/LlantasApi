@@ -1,11 +1,11 @@
 package com.proyectoMaycollins.LlantasApi.Model;
 
-import com.proyectoMaycollins.LlantasApi.Model.enums.CategoriaNombre;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -18,14 +18,33 @@ public class Productos {
     @Column(name = "producto_id")
     private Long productoId;
 
-    @Column(name = "codigo_producto", length = 255)
+    @Column(name = "codigo_producto", length = 50, nullable = false, unique = true)
     private String codigoProducto;
 
-    @Column(name = "descripcion", length = 1000)
+    @Column(name = "nombre", length = 200, nullable = false)
+    private String nombre;
+
+    @Column(name = "categoria_id")
+    private Integer categoriaId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id", insertable = false, updatable = false)
+    private Categorias categoriaObj;
+
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
-    @Column(name = "imagen_url", length = 255)
+    @Column(name = "marca", length = 100)
+    private String marca;
+
+    @Column(name = "modelo", length = 100)
+    private String modelo;
+
+    @Column(name = "imagen_url", length = 500)
     private String imagenUrl;
+
+    @Column(name = "precio_compra", precision = 10, scale = 2)
+    private BigDecimal precioCompra;
 
     @Column(name = "precio_venta", precision = 10, scale = 2)
     private BigDecimal precioVenta;
@@ -33,20 +52,31 @@ public class Productos {
     @Column(name = "precio_mayorista", precision = 10, scale = 2)
     private BigDecimal precioMayorista;
 
-    @Column(name = "precio_comprado", precision = 10, scale = 2)
-    private BigDecimal precioComprado;
+    @Column(name = "stock_actual")
+    private Integer stockActual;
+
+    @Column(name = "stock_minimo")
+    private Integer stockMinimo;
 
     @Column(name = "activo")
     private Boolean activo;
 
-    // Usar Enum CategoriaNombre en lugar de categoriaId
-    @Enumerated(EnumType.STRING)
-    @Column(name = "categoria", length = 50)
-    private CategoriaNombre categoria;
+    @Column(name = "fecha_registro")
+    private LocalDateTime fechaRegistro;
 
-    @Column(name = "marca", length = 255)
-    private String marca;
-
-    @Column(name = "modelo", length = 255)
-    private String modelo;
+    @PrePersist
+    protected void onCreate() {
+        if (activo == null) {
+            activo = true;
+        }
+        if (fechaRegistro == null) {
+            fechaRegistro = LocalDateTime.now();
+        }
+        if (stockActual == null) {
+            stockActual = 0;
+        }
+        if (stockMinimo == null) {
+            stockMinimo = 5;
+        }
+    }
 }
