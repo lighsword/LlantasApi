@@ -1,395 +1,685 @@
-# API de Negocio de Llantas
+# 🚗 LlantasAPI - Sistema de Gestión para Tienda de Llantas
 
-API REST desarrollada en Spring Boot para la gestión de categorías de productos en un negocio de llantas con sistema de autenticación JWT.
+API REST desarrollada en **Spring Boot 3.4** con autenticación JWT, sistema RBAC (Control de Acceso Basado en Roles), y gestión completa de inventario para tiendas de llantas y accesorios automotrices.
 
-## Características
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.2-green)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-- ✅ Arquitectura RESTful
-- ✅ Integración con base de datos PostgreSQL
-- ✅ Validación de datos
-- ✅ Manejo de excepciones global
-- ✅ Documentación automática con OpenAPI (Swagger)
-- ✅ Control de acceso a recursos
-- ✅ Soporte para operaciones CRUD completas
-- ✅ Sistema de autenticación JWT
-- ✅ Roles de usuario (ADMIN, USER)
+---
 
-## Tecnologías utilizadas
+## 📋 Tabla de Contenidos
 
-- **Java 23**
-- **Spring Boot 3.4.2**
-- **Spring Web MVC**
-- **Spring Data JPA**
-- **Spring Security**
-- **JWT (JSON Web Tokens)**
-- **PostgreSQL**
-- **Lombok**
-- **OpenAPI (Swagger)**
-- **Maven**
+- [Características](#-características)
+- [Requisitos Previos](#-requisitos-previos)
+- [Instalación](#-instalación)
+- [Configuración](#-configuración)
+- [Autenticación JWT](#-autenticación-jwt)
+- [Endpoints de la API](#-endpoints-de-la-api)
+- [Configuración en Postman](#-configuración-en-postman)
+- [Swagger UI](#-swagger-ui)
+- [Seguridad](#-seguridad)
+- [Roles y Permisos](#-roles-y-permisos)
 
-## Requisitos previos
+---
 
-Antes de ejecutar la aplicación, asegúrate de tener instalado:
+## ✨ Características
 
-- Java 23 o superior
-- Maven 3.6 o superior
-- PostgreSQL
-- Git
+- ✅ **Autenticación JWT** con Access Token (15 min) y Refresh Token (7 días)
+- ✅ **Sistema RBAC** con permisos granulares por módulo y acción
+- ✅ **Rotación de tokens** para máxima seguridad
+- ✅ **Gestión de sesiones** con límite de 3 sesiones simultáneas
+- ✅ **Alertas de seguridad automáticas** (detección de ataques de fuerza bruta)
+- ✅ **Auditoría completa** de accesos con IP y User-Agent
+- ✅ **Headers de seguridad HTTP** (HSTS, CSP, X-Frame-Options)
+- ✅ **Rate limiting** para intentos de login
+- ✅ **Soft delete** para productos
+- ✅ **Documentación Swagger/OpenAPI**
 
-## Instalación
+---
 
-1. Clona el repositorio:
+## 🔧 Requisitos Previos
+
+- **Java 21** o superior
+- **PostgreSQL 15+**
+- **Maven 3.9+** (o usar el wrapper incluido `mvnw`)
+
+---
+
+## 🚀 Instalación
+
+### 1. Clonar el repositorio
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/tu-usuario/LlantasApi.git
 cd LlantasApi
 ```
 
-2. Configura la base de datos PostgreSQL:
+### 2. Crear la base de datos
 ```sql
-CREATE DATABASE llantasdb;
--- Usuario: sa
--- Contraseña: admin
+CREATE DATABASE BackendLlantas;
 ```
 
-3. Actualiza la configuración en `src/main/resources/application.properties` si es necesario:
+### 3. Ejecutar script de migración de seguridad
+```sql
+\i sql/migracion_seguridad.sql
+```
+
+### 4. Compilar y ejecutar
+```bash
+# Windows
+.\mvnw.cmd spring-boot:run
+
+# Linux/Mac
+./mvnw spring-boot:run
+```
+
+La API estará disponible en: `http://localhost:8081`
+
+---
+
+## ⚙️ Configuración
+
+### Archivo `application.properties`
+
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/llantasdb
-spring.datasource.username=sa
-spring.datasource.password=admin
+# Base de datos
+spring.datasource.url=jdbc:postgresql://localhost:5432/BackendLlantas
+spring.datasource.username=postgres
+spring.datasource.password=tu_password
+
+# JWT
+security.jwt.secret=tu_clave_secreta_de_256_bits
+security.jwt.access-token-expiration-ms=900000      # 15 minutos
+security.jwt.refresh-token-expiration-ms=604800000  # 7 días
+
+# Seguridad
+security.session.max-concurrent=3
+security.login.max-attempts=5
+security.login.lockout-duration-minutes=15
 ```
 
-4. Compila y construye el proyecto:
-```bash
-mvn clean install
+### Variables de Entorno (Producción)
+
+| Variable | Descripción | Ejemplo |
+|----------|-------------|---------|
+| `DATABASE_URL` | URL de PostgreSQL | `jdbc:postgresql://host:5432/db` |
+| `DB_USERNAME` | Usuario de BD | `postgres` |
+| `DB_PASSWORD` | Contraseña de BD | `secreto` |
+| `JWT_SECRET_KEY` | Clave JWT (256 bits) | `tu_clave_muy_larga_y_segura` |
+| `CORS_ALLOWED_ORIGINS` | Orígenes permitidos | `https://tuapp.com` |
+
+---
+
+## 🔐 Autenticación JWT
+
+### Flujo de Autenticación
+
+```
+┌─────────┐     POST /api/auth/login      ┌─────────┐
+│ Cliente │ ─────────────────────────────▶ │   API   │
+│         │ ◀───────────────────────────── │         │
+└─────────┘  { accessToken, refreshToken } └─────────┘
+     │
+     │  (usar accessToken en cada request)
+     │
+     ▼
+┌─────────┐     GET /api/productos         ┌─────────┐
+│ Cliente │ ─────────────────────────────▶ │   API   │
+│         │  Header: Authorization:        │         │
+│         │  Bearer eyJhbGciOiJ...         │         │
+└─────────┘                                └─────────┘
+     │
+     │  (cuando accessToken expire, usar refreshToken)
+     │
+     ▼
+┌─────────┐     POST /api/auth/refresh     ┌─────────┐
+│ Cliente │ ─────────────────────────────▶ │   API   │
+│         │ ◀───────────────────────────── │         │
+└─────────┘  { nuevo accessToken,          └─────────┘
+               nuevo refreshToken }
 ```
 
-## Ejecución
+### Tiempos de Expiración
 
-### Modo desarrollo
-```bash
-mvn spring-boot:run
-```
+| Token | Duración | Uso |
+|-------|----------|-----|
+| **Access Token** | 15 minutos | Autenticar cada request |
+| **Refresh Token** | 7 días | Obtener nuevos tokens |
 
-### Empaquetado
-```bash
-mvn clean package
-java -jar target/LlantasApi-0.0.1-SNAPSHOT.jar
-```
+---
 
-## Endpoints de Autenticación
+## 📡 Endpoints de la API
 
-### 1. Registrar un nuevo usuario
-- **Método**: POST
-- **URL**: `/api/auth/register`
-- **Body**:
-```json
+### 🔐 Autenticación (`/api/auth`)
+
+#### Registrar Usuario
+```http
+POST /api/auth/register
+Content-Type: application/json
+
 {
-  "username": "yordan",
-  "password": "contraseña_segura",
-  "role": "ADMIN"
+  "email": "usuario@ejemplo.com",
+  "nombre": "Juan Pérez",
+  "password": "contraseña123",
+  "rol": "VENDEDOR"
 }
 ```
-- **Respuesta exitosa**: `200 OK`
+
+**Respuesta exitosa (200):**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-### 2. Iniciar sesión
-- **Método**: POST
-- **URL**: `/api/auth/login`
-- **Body**:
-```json
-{
-  "username": "yordan",
-  "password": "contraseña_segura"
-}
-```
-- **Respuesta exitosa**: `200 OK`
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-## Endpoints de Categoría (requieren autenticación)
-
-La API está disponible en `http://localhost:8080/api/categorias`
-
-### 1. Crear una categoría
-- **Método**: POST
-- **URL**: `/api/categorias`
-- **Headers**:
-  - `Content-Type: application/json`
-  - `Authorization: Bearer {token}`
-- **Body**:
-```json
-{
-  "nombreCategoria": "Neumáticos para SUV",
-  "modelo": "Todoterreno",
-  "medida": "265/70R17",
-  "especificaciones": "Resistencia alta, agarre en barro",
-  "tipoRefaccion": "Neumático",
-  "compatibilidad": "Vehículos SUV"
-}
-```
-- **Respuesta exitosa**: `201 Created`
-- **Errores posibles**: `400 Bad Request`, `409 Conflict` (si ya existe una categoría con el mismo nombre)
-
-### 2. Obtener una categoría por ID
-- **Método**: GET
-- **URL**: `/api/categorias/{id}`
-- **Headers**:
-  - `Authorization: Bearer {token}`
-- **Parámetros**: ID de la categoría
-- **Respuesta exitosa**: `200 OK`
-```json
-{
-  "categoriaId": 1,
-  "nombreCategoria": "Neumáticos para SUV",
-  "modelo": "Todoterreno",
-  "medida": "265/70R17",
-  "especificaciones": "Resistencia alta, agarre en barro",
-  "tipoRefaccion": "Neumático",
-  "compatibilidad": "Vehículos SUV",
-  "verificarDisponibilidad": null
-}
-```
-- **Errores posibles**: `404 Not Found`
-
-### 3. Listar todas las categorías
-- **Método**: GET
-- **URL**: `/api/categorias`
-- **Headers**:
-  - `Authorization: Bearer {token}`
-- **Respuesta exitosa**: `200 OK`
-```json
-[
-  {
-    "categoriaId": 1,
-    "nombreCategoria": "Neumáticos para SUV",
-    "modelo": "Todoterreno",
-    "medida": "265/70R17",
-    "especificaciones": "Resistencia alta, agarre en barro",
-    "tipoRefaccion": "Neumático",
-    "compatibilidad": "Vehículos SUV",
-    "verificarDisponibilidad": null
+  "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9...",
+  "type": "Bearer",
+  "expiresIn": 900000,
+  "usuario": {
+    "id": 1,
+    "email": "usuario@ejemplo.com",
+    "nombre": "Juan Pérez",
+    "rol": "VENDEDOR"
   }
-]
-```
-
-### 4. Actualizar una categoría
-- **Método**: PUT
-- **URL**: `/api/categorias/{id}`
-- **Headers**:
-  - `Content-Type: application/json`
-  - `Authorization: Bearer {token}`
-- **Parámetros**: ID de la categoría
-- **Body**:
-```json
-{
-  "nombreCategoria": "Neumáticos para SUV Actualizado",
-  "modelo": "Todoterreno Premium",
-  "medida": "265/70R17",
-  "especificaciones": "Resistencia alta, agarre en barro y asfalto",
-  "tipoRefaccion": "Neumático",
-  "compatibilidad": "Vehículos SUV Premium"
-}
-```
-- **Respuesta exitosa**: `200 OK`
-- **Errores posibles**: `400 Bad Request`, `404 Not Found`, `409 Conflict`
-
-### 5. Eliminar una categoría
-- **Método**: DELETE
-- **URL**: `/api/categorias/{id}`
-- **Headers**:
-  - `Authorization: Bearer {token}`
-- **Parámetros**: ID de la categoría
-- **Respuesta exitosa**: `204 No Content`
-- **Errores posibles**: `404 Not Found`
-
-## Documentación interactiva
-
-La API incluye documentación interactiva con Swagger UI disponible en:
-- http://localhost:8080/swagger-ui.html
-- http://localhost:8080/v3/api-docs
-
-## Pruebas con Postman
-
-Para probar la API con Postman:
-
-1. Importa la colección de Postman (opcional, puedes crearla manualmente)
-2. Asegúrate de tener el servidor corriendo en `http://localhost:8080`
-3. Configura los headers:
-   - `Content-Type: application/json`
-   - `Authorization: Bearer {token}` (para endpoints protegidos)
-
-### Pasos para registrar a Yordan como administrador y hacer login:
-
-#### 1. Registro de usuario (Register)
-- URL: `POST http://localhost:8080/api/auth/register`
-- Headers: `Content-Type: application/json`
-- Body: Raw JSON
-```json
-{
-  "username": "yordan",
-  "password": "admin123",
-  "role": "ADMIN"
 }
 ```
 
-#### 2. Login de usuario (Login)
-- URL: `POST http://localhost:8080/api/auth/login`
-- Headers: `Content-Type: application/json`
-- Body: Raw JSON
-```json
+**Roles disponibles:** `ADMIN`, `VENDEDOR`, `ALMACENISTA`, `COMPRADOR`
+
+---
+
+#### Iniciar Sesión
+```http
+POST /api/auth/login
+Content-Type: application/json
+
 {
-  "username": "yordan",
-  "password": "admin123"
+  "email": "usuario@ejemplo.com",
+  "password": "contraseña123"
 }
 ```
 
-#### 3. Uso del token para acceder a endpoints protegidos
-- Copia el token devuelto en el login
-- Usa este token en el header Authorization para acceder a los endpoints de categorías:
-  - Header: `Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
-
-### Ejemplos de colección Postman
-
-#### 1. GET - Listar categorías (con autenticación)
-- URL: `GET http://localhost:8080/api/categorias`
-- Headers: 
-  - `Content-Type: application/json`
-  - `Authorization: Bearer {token}`
-
-#### 2. POST - Crear categoría (con autenticación)
-- URL: `POST http://localhost:8080/api/categorias`
-- Headers:
-  - `Content-Type: application/json`
-  - `Authorization: Bearer {token}`
-- Body: Raw JSON
+**Respuesta exitosa (200):**
 ```json
 {
-  "nombreCategoria": "Neumáticos deportivos",
-  "modelo": "Verano",
-  "medida": "245/40R18",
-  "especificaciones": "Alto rendimiento, asfalto seco",
-  "tipoRefaccion": "Neumático",
-  "compatibilidad": "Vehículos deportivos"
+  "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9...",
+  "type": "Bearer",
+  "expiresIn": 900000,
+  "usuario": {
+    "id": 1,
+    "email": "usuario@ejemplo.com",
+    "nombre": "Juan Pérez",
+    "rol": "VENDEDOR"
+  }
 }
 ```
 
-#### 3. PUT - Actualizar categoría (con autenticación)
-- URL: `PUT http://localhost:8080/api/categorias/1`
-- Headers:
-  - `Content-Type: application/json`
-  - `Authorization: Bearer {token}`
-- Body: Raw JSON
-```json
+**Errores posibles:**
+| Código | Descripción |
+|--------|-------------|
+| 401 | Credenciales inválidas |
+| 423 | Usuario bloqueado (5+ intentos fallidos) |
+
+---
+
+#### Refrescar Tokens
+```http
+POST /api/auth/refresh
+Content-Type: application/json
+
 {
-  "nombreCategoria": "Neumáticos deportivos actualizados",
-  "modelo": "Verano Premium",
-  "medida": "245/40R18",
-  "especificaciones": "Alto rendimiento, asfalto seco y húmedo",
-  "tipoRefaccion": "Neumático",
-  "compatibilidad": "Vehículos deportivos"
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
 }
 ```
 
-#### 4. DELETE - Eliminar categoría (con autenticación)
-- URL: `DELETE http://localhost:8080/api/categorias/1`
-- Headers:
-  - `Authorization: Bearer {token}`
-
-## Base de datos
-
-El proyecto utiliza JPA con Hibernate para mapeo objeto-relacional. Las tablas `categoria_productos` y `users` se crean automáticamente con los siguientes esquemas:
-
-```sql
-CREATE TABLE categoria_productos (
-    categoria_id BIGSERIAL PRIMARY KEY,
-    nombre_categoria VARCHAR(255) NOT NULL,
-    modelo VARCHAR(255),
-    medida VARCHAR(255),
-    especificaciones TEXT,
-    tipo_refaccion VARCHAR(255),
-    compatibilidad VARCHAR(255),
-    verificar_disponibilidad BOOLEAN
-);
-
-CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(255),
-    enabled BOOLEAN DEFAULT TRUE
-);
+**Respuesta exitosa (200):**
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
+  "refreshToken": "eyJhbGciOiJIUzI1NiJ9...",
+  "type": "Bearer",
+  "rotated": true
+}
 ```
 
-## Manejo de errores
+> ⚠️ **IMPORTANTE:** Guarda el nuevo `refreshToken`. El anterior queda invalidado.
 
-La API devuelve códigos de estado HTTP estándares:
+---
 
-- `200 OK` - Solicitud exitosa
-- `201 Created` - Recurso creado exitosamente
-- `204 No Content` - Recurso eliminado exitosamente
-- `400 Bad Request` - Solicitud inválida
-- `401 Unauthorized` - No autorizado (token inválido o ausente)
-- `403 Forbidden` - Acceso prohibido
-- `404 Not Found` - Recurso no encontrado
-- `409 Conflict` - Conflicto (por ejemplo, duplicado)
+#### Cerrar Sesión
+```http
+POST /api/auth/logout
+Authorization: Bearer {accessToken}
+```
 
-## Variables de entorno
+**Respuesta (200):**
+```json
+{
+  "mensaje": "Sesión cerrada exitosamente"
+}
+```
 
-Puedes sobreescribir las propiedades por defecto usando variables de entorno:
+---
 
+#### Cerrar Todas las Sesiones
+```http
+POST /api/auth/logout-all
+Authorization: Bearer {accessToken}
+```
+
+---
+
+### 👤 Usuarios (`/api/usuarios`) - Solo ADMIN
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/usuarios` | Listar todos los usuarios |
+| `GET` | `/api/usuarios/{id}` | Obtener usuario por ID |
+| `POST` | `/api/usuarios` | Crear usuario |
+| `PUT` | `/api/usuarios/{id}` | Actualizar usuario |
+| `DELETE` | `/api/usuarios/{id}` | Eliminar usuario |
+
+#### Crear Usuario
+```http
+POST /api/usuarios
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "email": "nuevo@ejemplo.com",
+  "nombre": "Nuevo Usuario",
+  "password": "password123",
+  "rol": "VENDEDOR",
+  "activo": true
+}
+```
+
+---
+
+### 📦 Productos (`/api/productos`)
+
+| Método | Endpoint | Descripción | Acceso |
+|--------|----------|-------------|--------|
+| `GET` | `/api/productos` | Todos los productos | ADMIN, ALMACENISTA |
+| `GET` | `/api/productos/visibles` | Productos en catálogo (stock > 0) | Todos |
+| `GET` | `/api/productos/agotados` | Productos sin stock | ADMIN, ALMACENISTA |
+| `GET` | `/api/productos/descontinuados` | Productos inactivos | ADMIN |
+| `GET` | `/api/productos/{id}` | Obtener por ID | Todos |
+| `GET` | `/api/productos/buscar?q=texto` | Buscar productos | Todos |
+| `POST` | `/api/productos` | Crear producto | ADMIN, ALMACENISTA |
+| `PUT` | `/api/productos/{id}` | Actualizar producto | ADMIN, ALMACENISTA |
+| `DELETE` | `/api/productos/{id}` | Descontinuar (soft delete) | ADMIN |
+
+#### Crear Producto
+```http
+POST /api/productos
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "codigoProducto": "LLA-001",
+  "descripcion": "Llanta Michelin 205/55R16",
+  "marca": "Michelin",
+  "modelo": "Primacy 4",
+  "precioCompra": 150.00,
+  "precioVenta": 220.00,
+  "categoriaId": 1,
+  "activo": true
+}
+```
+
+---
+
+### 👥 Clientes (`/api/clientes`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/clientes` | Listar todos |
+| `GET` | `/api/clientes/activos` | Solo activos |
+| `GET` | `/api/clientes/{id}` | Por ID |
+| `GET` | `/api/clientes/email/{email}` | Por email |
+| `GET` | `/api/clientes/documento/{doc}` | Por documento |
+| `POST` | `/api/clientes` | Crear |
+| `PUT` | `/api/clientes/{id}` | Actualizar |
+| `DELETE` | `/api/clientes/{id}` | Eliminar |
+
+#### Crear Cliente
+```http
+POST /api/clientes
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "nombre": "María García",
+  "email": "maria@ejemplo.com",
+  "telefono": "999888777",
+  "documentoIdentidad": "12345678",
+  "tipoDocumento": "DNI",
+  "direccion": "Av. Principal 123",
+  "activo": true
+}
+```
+
+---
+
+### 💰 Ventas (`/api/ventas`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/ventas` | Listar ventas |
+| `GET` | `/api/ventas/{id}` | Obtener venta |
+| `GET` | `/api/ventas/{id}/detalles` | Detalles de venta |
+| `POST` | `/api/ventas` | Crear venta |
+| `POST` | `/api/ventas/{id}/detalles` | Agregar detalle |
+
+#### Crear Venta
+```http
+POST /api/ventas
+Authorization: Bearer {accessToken}
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "usuarioId": 1,
+  "metodoPago": "EFECTIVO",
+  "observaciones": "Venta al contado"
+}
+```
+
+---
+
+### 📊 Inventario (`/api/inventario`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/inventario` | Todo el inventario |
+| `GET` | `/api/inventario/almacen/{id}` | Por almacén |
+| `GET` | `/api/inventario/producto/{id}` | Por producto |
+| `GET` | `/api/inventario/{productoId}/{almacenId}` | Específico |
+| `POST` | `/api/inventario` | Crear/Actualizar |
+| `DELETE` | `/api/inventario/{productoId}/{almacenId}` | Eliminar |
+
+---
+
+### 🔐 Permisos RBAC (`/api/permisos`)
+
+| Método | Endpoint | Descripción | Acceso |
+|--------|----------|-------------|--------|
+| `GET` | `/api/permisos/mis-permisos` | Mis permisos | Todos |
+| `GET` | `/api/permisos/verificar?modulo=X&accion=Y` | Verificar permiso | Todos |
+| `GET` | `/api/permisos/Role/{rol}` | Permisos de un rol | ADMIN |
+| `GET` | `/api/permisos/matriz` | Matriz completa | ADMIN |
+| `POST` | `/api/permisos/inicializar` | Cargar defaults | ADMIN |
+| `PUT` | `/api/permisos` | Modificar permiso | ADMIN |
+
+#### Obtener Mis Permisos (para Frontend)
+```http
+GET /api/permisos/mis-permisos
+Authorization: Bearer {accessToken}
+```
+
+**Respuesta:**
+```json
+{
+  "VENTAS": {
+    "VER": true,
+    "CREAR": true,
+    "EDITAR": true,
+    "ELIMINAR": false
+  },
+  "CLIENTES": {
+    "VER": true,
+    "CREAR": true,
+    "EDITAR": true,
+    "ELIMINAR": false
+  },
+  "PRODUCTOS": {
+    "VER": true,
+    "CREAR": false,
+    "EDITAR": false,
+    "ELIMINAR": false
+  }
+}
+```
+
+---
+
+### 🛡️ Seguridad (`/api/seguridad`) - Solo ADMIN
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `GET` | `/api/seguridad/resumen` | Resumen de seguridad 24h |
+| `GET` | `/api/seguridad/estadisticas?horasAtras=24` | Estadísticas de accesos |
+| `GET` | `/api/seguridad/ip-sospechosa?ip=X` | Verificar IP |
+| `GET` | `/api/seguridad/auditoria/usuario/{id}` | Auditoría de usuario |
+| `GET` | `/api/seguridad/auditoria/ip/{ip}` | Auditoría por IP |
+| `GET` | `/api/seguridad/sesiones/usuario/{id}` | Sesiones activas |
+| `POST` | `/api/seguridad/sesiones/cerrar-todas/{id}` | Forzar logout |
+| `POST` | `/api/seguridad/analizar` | Ejecutar análisis manual |
+
+#### Obtener Estadísticas
+```http
+GET /api/seguridad/estadisticas?horasAtras=48
+Authorization: Bearer {accessToken}
+```
+
+**Respuesta:**
+```json
+{
+  "periodo": "Últimas 48 horas",
+  "desde": "2026-01-06T10:00:00",
+  "hasta": "2026-01-08T10:00:00",
+  "logins": 150,
+  "logouts": 120,
+  "accesosDenegados": 8,
+  "alertasSeguridad": 2,
+  "ipsUnicas": 25,
+  "sesionesEstimadas": 30
+}
+```
+
+---
+
+### 📁 Otros Endpoints
+
+| Módulo | Base URL | Descripción |
+|--------|----------|-------------|
+| Categorías | `/api/categorias` | CRUD de categorías |
+| Almacenes | `/api/almacenes` | Gestión de almacenes |
+| Compras | `/api/compras` | Compras a proveedores |
+| Proveedores | `/api/proveedores` | Gestión de proveedores |
+| Precios | `/api/precios` | Historial de precios |
+| Promociones | `/api/promociones` | Gestión de promociones |
+| Reportes | `/api/reportes` | Reportes del sistema |
+| Dashboard | `/api/dashboard` | Métricas generales |
+| Notificaciones | `/api/notificaciones` | Sistema de notificaciones |
+| Movimientos | `/api/movimientos-inventario` | Movimientos de stock |
+
+---
+
+## 📮 Configuración en Postman
+
+### 1. Crear Colección
+
+1. Abre Postman
+2. Click en **"New Collection"**
+3. Nombre: `LlantasAPI`
+
+### 2. Configurar Variables de Colección
+
+Ve a la pestaña **Variables** de la colección:
+
+| Variable | Initial Value | Current Value |
+|----------|---------------|---------------|
+| `base_url` | `http://localhost:8081` | `http://localhost:8081` |
+| `access_token` | (vacío) | (vacío) |
+| `refresh_token` | (vacío) | (vacío) |
+
+### 3. Configurar Autenticación Automática
+
+En la pestaña **Authorization** de la colección:
+- Type: **Bearer Token**
+- Token: `{{access_token}}`
+
+### 4. Script para Guardar Tokens Automáticamente
+
+En el request de **Login**, ve a **Tests** y agrega:
+
+```javascript
+if (pm.response.code === 200) {
+    var jsonData = pm.response.json();
+    pm.collectionVariables.set("access_token", jsonData.accessToken);
+    pm.collectionVariables.set("refresh_token", jsonData.refreshToken);
+    console.log("✅ Tokens guardados automáticamente");
+}
+```
+
+### 5. Importar Colección desde Swagger
+
+1. Abre: `http://localhost:8081/v3/api-docs`
+2. Copia el JSON
+3. En Postman: **Import** → **Raw text** → Pega el JSON
+
+---
+
+## 📖 Swagger UI
+
+Accede a la documentación interactiva:
+
+```
+http://localhost:8081/swagger-ui.html
+```
+
+### Autenticación en Swagger
+
+1. Haz login con `/api/auth/login`
+2. Copia el `accessToken` de la respuesta
+3. Click en **"Authorize"** (candado verde)
+4. Ingresa: `Bearer {tu_access_token}`
+5. Click **"Authorize"**
+
+Ahora puedes probar todos los endpoints directamente desde Swagger.
+
+---
+
+## 🔒 Seguridad
+
+### Headers de Seguridad HTTP
+
+La API incluye automáticamente:
+
+```http
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Content-Security-Policy: default-src 'self'
+Referrer-Policy: strict-origin-when-cross-origin
+```
+
+### Protecciones Implementadas
+
+| Protección | Descripción |
+|------------|-------------|
+| **Rate Limiting** | Máximo 5 intentos de login fallidos → bloqueo 15 min |
+| **Rotación de Tokens** | Refresh token cambia en cada renovación |
+| **Blacklist de Tokens** | Tokens revocados no pueden reutilizarse |
+| **Límite de Sesiones** | Máximo 3 sesiones simultáneas por usuario |
+| **Auditoría Completa** | Log de IP, User-Agent, endpoint, resultado |
+| **Alertas Automáticas** | Detección de ataques cada 5 minutos |
+| **HTTPS Forzado** | Obligatorio en producción |
+| **CORS Configurado** | Sin wildcard en producción |
+
+---
+
+## 👥 Roles y Permisos
+
+### Roles del Sistema
+
+| Rol | Descripción |
+|-----|-------------|
+| `ADMIN` | Acceso total a todos los módulos |
+| `VENDEDOR` | Ventas, clientes, consulta de productos/precios |
+| `ALMACENISTA` | Inventario, productos, almacenes |
+| `COMPRADOR` | Compras, proveedores, consulta de productos |
+
+### Matriz de Permisos por Defecto
+
+| Módulo | ADMIN | VENDEDOR | ALMACENISTA | COMPRADOR |
+|--------|-------|----------|-------------|-----------|
+| Usuarios | ✅ CRUD | ❌ | ❌ | ❌ |
+| Productos | ✅ CRUD | 👁️ Ver | ✅ CRUD | 👁️ Ver |
+| Ventas | ✅ CRUD | ✅ CRUD | ❌ | ❌ |
+| Clientes | ✅ CRUD | ✅ CRUD | ❌ | ❌ |
+| Inventario | ✅ CRUD | ❌ | ✅ CRUD | ❌ |
+| Compras | ✅ CRUD | ❌ | ❌ | ✅ CRUD |
+| Proveedores | ✅ CRUD | ❌ | ❌ | ✅ CRUD |
+| Reportes | ✅ | ✅ | 👁️ | 👁️ |
+| Dashboard | ✅ | ✅ | ✅ | ✅ |
+| Seguridad | ✅ | ❌ | ❌ | ❌ |
+
+---
+
+## 🧪 Ejemplos de Prueba Rápida
+
+### 1. Registrar Admin
 ```bash
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/tu_basedatos
-SPRING_DATASOURCE_USERNAME=tu_usuario
-SPRING_DATASOURCE_PASSWORD=tu_contraseña
-SERVER_PORT=8080
-JWT_SECRET_KEY=tu_clave_secreta_jwt
-JWT_EXPIRATION_TIME=86400000
+curl -X POST http://localhost:8081/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@test.com","nombre":"Admin","password":"admin123","rol":"ADMIN"}'
 ```
 
-## Configuración adicional
+### 2. Login
+```bash
+curl -X POST http://localhost:8081/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@test.com","password":"admin123"}'
+```
 
-En `application.properties` puedes modificar:
+### 3. Listar Productos
+```bash
+curl -X GET http://localhost:8081/api/productos/visibles \
+  -H "Authorization: Bearer {tu_access_token}"
+```
 
-- Puerto del servidor (`server.port`)
-- Configuración de la base de datos
-- Configuración de JPA
-- Logging
-- Configuración JWT
+---
 
-## Despliegue en producción
+## 📝 Códigos de Error
 
-Para desplegar en producción:
+| Código | Significado |
+|--------|-------------|
+| 200 | Éxito |
+| 201 | Creado exitosamente |
+| 400 | Datos inválidos |
+| 401 | No autenticado / Token inválido |
+| 403 | Sin permisos (Forbidden) |
+| 404 | Recurso no encontrado |
+| 409 | Conflicto (ej: email duplicado) |
+| 423 | Usuario bloqueado |
+| 500 | Error interno del servidor |
 
-1. Asegúrate de tener la base de datos configurada
-2. Modifica las propiedades según tu entorno de producción
-3. Compila el jar con `mvn clean package`
-4. Ejecuta con: `java -jar LlantasApi-0.0.1-SNAPSHOT.jar`
-5. Considera usar un gestor de procesos como systemd o Docker para mantener la aplicación corriendo
+---
 
-## Seguridad
+## 🤝 Contribución
 
-Esta API implementa autenticación y autorización JWT:
-- Autenticación JWT con tokens firmados
-- Autorización basada en roles (ADMIN, USER)
-- CORS configurado apropiadamente
-- Filtros de seguridad para proteger endpoints
+1. Fork el proyecto
+2. Crea tu rama (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit tus cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
 
-## Contribuciones
+---
 
-Las contribuciones son bienvenidas. Por favor, abre un issue o pull request para discutir cambios antes de enviarlos.
+## 📄 Licencia
 
-## Licencia
+Este proyecto está bajo la Licencia MIT.
 
-Este proyecto está licenciado bajo [la licencia MIT](LICENSE).
+---
 
-## Contacto
+## 📞 Soporte
 
-Desarrollador: Proyecto Maycollins
-Email: [tu_email@example.com]
+- 📧 Email: soporte@llantasapi.com
+- 📖 Documentación: `/swagger-ui.html`
+- 🐛 Issues: GitHub Issues
+
+---
+
+**Desarrollado con ❤️ por el equipo de LlantasAPI**
+

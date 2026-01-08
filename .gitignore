@@ -5,6 +5,15 @@
 *.obj
 *.out
 target/
+build/
+dist/
+out/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+!**/src/main/**/target/
+!**/src/test/**/target/
 
 # Dependencies
 .gradle/
@@ -19,19 +28,31 @@ __pycache__/
 *.log
 *.tmp
 *.swp
+*.bak
+*~
 
-# Environment
+# Environment - IMPORTANTE: No subir datos sensibles
 .env
 .env.local
 *.env.*
+application-local.properties
 
 # Editors
 .vscode/
 .idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
 
 # OS specific
 .DS_Store
 Thumbs.db
+*.pid
+*.seed
+*.pid.lock
 
 # Coverage
 coverage/
